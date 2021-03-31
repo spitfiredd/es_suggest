@@ -17,6 +17,8 @@ python -m pip install -r requirements.txt
     * docker-compose up
 2. Run the `build.py` script from the root directory to create the index and populate the index.
 
+The data is sourced from [SAM.gov](https://sam.gov/SAM/pages/public/extracts/samPublicAccessData.jsf).
+
 ## Start Application
 
 1. Start application with `flask run`
