@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_css %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='styles/search.css') }}"/>
+
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="body_wrapper" align="center">
+  <h2>Elasticsearch Search as you type demo.</h2>
+  <p>
+    Test it out, for example enter General Dynamics
+  </p>
+  <div class="autoComplete_wrapper">
+    <input id="autoComplete" type="text" tabindex="1">
+  </div>
+  <div class="selection"></div>
+</div>
+
+{% endblock %}
+
+{% block tail_js %}
+  <script src="{{url_for('static', filename='js/autocomplete.js')}}"></script>
+{% endblock %}

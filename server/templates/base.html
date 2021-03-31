@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>{% block title %}{% endblock %}</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tarekraafat-autocomplete.js/8.3.0/css/autoComplete.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tarekraafat-autocomplete.js/8.3.0/js/autoComplete.min.js"></script>
+  {% block head_css %} {% endblock %}
+  {% block head_js %} {% endblock %}
+</head>
+
+<body>
+  {% block content %}{% endblock %}
+  
+  {% block tail_js %} {% endblock %}
+</body>
+
+</html>
