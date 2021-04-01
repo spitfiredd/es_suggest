@@ -18,7 +18,7 @@ ascii_fold = analyzer(
 )
 
 custom_analyzer = analyzer('custom_analyzer',
-    tokenizer=tokenizer('ngram', min_gram=3, max_gram=5),
+    tokenizer=tokenizer('trigram', 'ngram', min_gram=3, max_gram=4),
     filter=['lowercase']
 )
 
@@ -28,7 +28,7 @@ email_analyzer = analyzer('email',
 )
 
 
-class SamVendors(Document):
+class SamVendorsIndex(Document):
     duns = Keyword()
     duns_plus_four = Keyword()
     cage_code = Text(fields={'raw': Keyword()})

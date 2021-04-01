@@ -1,0 +1,26 @@
+[
+  {
+    "database":"postgres",
+    "index":"vendors",
+    "nodes":[
+      {
+        "table":"sam_vendors",
+        "schema":"public",
+        "columns":[
+          "duns",
+          "duns_plus_four",
+          "cage_code",
+          "legal_business_name",
+          "elec_govt_bus_poc_email",
+          "mailing_address_line1",
+          "mailing_address_line2",
+          "mailing_address_city",
+          "mailing_address_state",
+          "mailing_address_zip",
+          "mailing_address_zip_plus_four",
+          "mailing_address_country"
+        ]
+      }
+    ]
+  }
+]
