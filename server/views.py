@@ -2,7 +2,7 @@
 import json
 
 from elasticsearch_dsl import connections
-from flask import Blueprint, Response, render_template, request, redirect
+from flask import Blueprint, Response, render_template, request, redirect, url_for
 
 from server.elastic_models import SamVendorsIndex
 from server.database_models import SamVendors
@@ -26,8 +26,12 @@ def autocomplete():
     name = request.args.get('name')
     size = request.args.get('size', 15)
     sam_vendors = SamVendorsIndex()
-    output = sam_vendors.auto_complete(name, 'legal_business_name', size=size)
-    return Response(json.dumps(output), mimetype='application/json')
+    results = sam_vendors.auto_complete(name, 'legal_business_name', size=size)
+    return Response(
+        json.dumps(results),
+        status=200,
+        mimetype='application/json'
+    )
 
 
 @search_bp.route('/')
@@ -50,5 +54,5 @@ def update():
 
         db.session.add(vendor)
         db.session.commit()
-        return redirect('/')
+        return redirect(url_for('search.search'))
     return render_template('update.html', form=form)
