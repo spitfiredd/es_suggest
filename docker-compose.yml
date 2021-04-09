@@ -1,27 +1,70 @@
-version: '3'
-
-services:
-  db:
+version: '3.7'
+services: 
+  postgres:
     image: postgres:10.9
-    ports:
-      - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=secrect
+      - POSTGRES_PASSWORD=password
       - POSTGRES_USER=postgres
-    command: postgres -c wal_level=logical -c max_replication_slots=1
-  redis:
-    image: redis:4.0.9
+      - POSTGRES_DB=postgres
     ports:
-      - "6379:6379"
-  elasticsearch:
-    image: elasticsearch:7.9.1
+      - 5432:5432
     volumes:
-      - esdata:/usr/share/elasticsearch/data
-    environment:
-      - discovery.type=single-node
+      - postgres_data:/var/lib/postgresql/data
+    networks: 
+      - share-network
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
     ports:
-      - "9200:9200"
-    
-
+      - 9300:9300
+      - 9200:9200
+    environment:
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - http.cors.allow-methods=OPTIONS,HEAD,GET,POST,PUT,DELETE
+      - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+      - transport.host=127.0.0.1
+      - cluster.name=docker-cluster
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - share-network
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.1
+    ports:
+      - 5601:5601
+    networks:
+      - share-network
+    depends_on:
+      - elasticsearch
+  logstash:
+    build: ./logstash
+      # dockerfile: ${PWD}/logstash/Dockerfile
+      # context: ${PWD}/
+    environment:
+      - LOGSTASH_JDBC_URL=jdbc:postgresql://postgres:5432/postgres
+      - LOGSTASH_JDBC_DRIVER=org.postgresql.Driver
+      - LOGSTASH_JDBC_DRIVER_JAR_LOCATION=/usr/share/logstash/logstash-core/lib/jars/postgresql.jar
+      - LOGSTASH_JDBC_USERNAME=postgres
+      - LOGSTASH_JDBC_PASSWORD=password
+      - LOGSTASH_ELASTICSEARCH_HOST=http://elasticsearch:9200
+    volumes:
+      # - ./logstash/pipeline/pipelines/:/usr/share/logstash/pipeline/pipelines/
+      # - ./logstash/pipeline/pipelines.yml:/usr/share/logstash/pipeline/pipelines.yml
+      - ./logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      # - ./logstash/lastrun/.logstash_jdbc_last_run:/opt/logstash/lastrun/.logstash_jdbc_last_run
+    ports:
+      - 9600:9600
+      - 5044:5044
+    networks:
+      - share-network
+    depends_on:
+      - elasticsearch
+      - kibana
+      - postgres
 volumes:
-  esdata:
+  elasticsearch_data:
+  postgres_data:
+networks:
+  share-network:

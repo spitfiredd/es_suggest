@@ -2,9 +2,12 @@
 import json
 
 from elasticsearch_dsl import connections
-from flask import Blueprint, Response, render_template, request, current_app
+from flask import Blueprint, Response, render_template, request, redirect
 
 from server.elastic_models import SamVendorsIndex
+from server.database_models import SamVendors
+from server.forms import UpdateByCageForm
+from server.extensions import db
 
 
 search_bp = Blueprint('search', __name__)
@@ -36,3 +39,16 @@ def search():
     """
     title = "Search as you type powered by Elasticsearch."
     return render_template('search.html', title=title)
+
+
+@search_bp.route('/update', methods=('GET', 'POST'))
+def update():
+    form = UpdateByCageForm()
+    if form.validate_on_submit():
+        vendor = SamVendors.query.filter_by(cage_code=form.cage.data).first()
+        vendor.legal_business_name = form.name.data
+
+        db.session.add(vendor)
+        db.session.commit()
+        return redirect('/')
+    return render_template('update.html', form=form)

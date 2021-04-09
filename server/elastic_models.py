@@ -5,7 +5,8 @@ from elasticsearch_dsl import (
     analyzer,
     token_filter,
     Keyword,
-    tokenizer
+    tokenizer,
+    Date
 )
 from elasticsearch_dsl.query import MultiMatch
 from .utils import build_elastic_results_dict
@@ -43,6 +44,9 @@ class SamVendorsIndex(Document):
     mailing_address_zip_plus_four = Text(fields={'raw': Keyword()})
     mailing_address_country = Keyword()
 
+    created_at = Date()
+    updated_at = Date()
+
     class Index:
         name = "vendors"
         settings = {"number_of_shards": 10, "number_of_replicas": 0}
@@ -72,5 +76,7 @@ class SamVendorsIndex(Document):
         )
         search = search.extra(size=size)
         response = search.execute()
-        return build_elastic_results_dict(response)
+
+        remove_keys = ('@version', '@timestamp', 'updated_at', 'created_at')
+        return build_elastic_results_dict(response, remove_keys=remove_keys)
 

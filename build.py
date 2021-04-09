@@ -21,11 +21,16 @@ if __name__ == "__main__":
 
     # create tables on the database
     with app.app_context(): 
+        print("Dropping tables...")
         db.drop_all()
+
+        print("Dropping functions...")
+        db.engine.execute("DROP FUNCTION IF EXISTS modify_updated_at CASCADE;")
+
+        print("Creating tables.")
         db.create_all()
 
 
-    # load data
     with open("sam_gov_data.csv") as f:
         data = [tuple(line) for line in csv.reader(f)]
 
@@ -49,10 +54,18 @@ if __name__ == "__main__":
     # insert data into database
     with psycopg2.connect(os.environ.get('DATABASE_URL')) as conn:
         with conn.cursor() as cursor:
+            # add tiggers to modify updated_at when column is updated
+            # cursor.execute(update_trigger_function)
+            # cursor.execute(update_trigger)
+            print("Loading Database...")
             execute_values(cursor, insert_statment, data[1::])
             conn.commit()
 
+    print("Creating indexes.")
     # create elasticsearch index
     es = connections.create_connection(hosts=['localhost'], timeout=20)
-    SamVendorsIndex._index.delete()
+    try:
+        SamVendorsIndex._index.delete()
+    except:
+        pass
     SamVendorsIndex.init()

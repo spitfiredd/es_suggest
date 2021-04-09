@@ -1,0 +1,22 @@
+
+
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_css %}
+
+{% endblock %}
+
+{% block content %}
+
+<form method="POST" action="{{ url_for('search.update') }}">
+  {{ form.csrf_token }}
+  {{ form.name.label }} {{ form.name(size=50) }}
+  {{ form.cage.label }} {{ form.cage(size=5) }}
+  <input type="submit" value="Update">
+</form>
+
+{% endblock %}
+
+{% block tail_js %}
+{% endblock %}

@@ -1,0 +1,4 @@
+- pipeline.id: bootstrap-sam-vendors
+  path.config: "/usr/share/logstash/pipeline/pipelines/boostrap.conf"
+- pipeline.id: monitor-sam-vendors
+  path.config: "/usr/share/logstash/pipeline/pipelines/monitor.conf"
